@@ -357,4 +357,51 @@ oc adm policy add-role-to-group cluster-admin <group-name>
 Adminstrator > User Management > Group-name > RoleBindings > Create Binding >  Role name "cluster-admin" 
 cluster-admin is Full Access
 if you want to read only Choose Role name "View"
-## 
+
+## Create openshift-storage "recommend"
+1- ODF OpenShift Data Foundation operator from OperatorHub
+2- AWS EBS CSI Driver
+3- NutaniCSI Driver 
+
+## After Install any openshift-storage like ODF
+1- List Available StorageClasses
+``` bash
+oc get storageclass
+```
+2- Set a Default StorageClass "Optional"
+``` bash
+oc annotate storageclass <storage-class-name> storageclass.kubernetes.io/is-default-class=true
+```
+3- Test PV Provisioning > Create test-pvc.yaml
+``` bash
+vim  test-pvc.yaml
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: test-pvc
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: <your-storage-class>
+
+```
+4- Apply yaml file of PVC
+``` bash
+oc apply -f pvc-test.yaml
+
+```
+
+5- Check ODF Components
+``` bash
+oc get pods -n openshift-storage
+
+```
+6- Check CSI Driver Components
+``` bash
+oc get pods -n <csi-namespace>
+
+```
