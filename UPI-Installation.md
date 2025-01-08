@@ -405,3 +405,49 @@ oc get pods -n openshift-storage
 oc get pods -n <csi-namespace>
 
 ```
+
+## To Show All Api-Resources 
+``` bash
+oc api-resources
+```
+
+## To Show Cluster-Operator of your Cluster
+``` bash
+oc get co
+```
+
+## To make remote/ssh to master node
+``` bash
+ssh core@<Master-ip>
+```
+## To Export kubeconfig 
+## Bastion-Host
+``` bash
+export KUBECONFIG=/etc/kubernetes/static-pod-resources/kube-apiserver-certs/secrets/node-kubeconfigs/lb-int.kubeconfig
+```
+## Master node
+``` bash
+ssh core@<master-ip>
+export KUBECONFIG=/etc/kubernetes/static-pod-resources/kube-apiserver-certs/secrets/node-kubeconfigs/lb-int.kubeconfig
+oc get nodes
+```
+
+## Solution of After restart OpenShift Cluter or network lost of machines , we should check the below 
+1- go to contole planes as sequence  using ssh and check the below 
+``` bash
+systemctl status kubelet
+systemctl restart kubelet
+systemctl status crio
+systemctl restart  crio
+sudo -i
+crictl ps "Show Running Containners"
+```
+
+## Check OCP Certificate Duration
+``` bash
+echo | openssl s_client -connect api-int.ocp-installation-test.lab.local:6443 | openssl x509 -noout -text
+```
+
+## To Upgrade Cluster-Version of OCP-Cluster
+## Note : etcdbackup schedule task
+https://access.redhat.com/labsinfo/ocpupgradegraph    "stable channel"
