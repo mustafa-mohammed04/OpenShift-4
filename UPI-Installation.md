@@ -439,6 +439,9 @@ systemctl status kubelet
 systemctl restart kubelet
 systemctl status crio
 systemctl restart  crio
+OR "Script"
+for host in $HOSTS;do ssh core@$host sudo systemctl restart kubelet; ssh core@$host sudo systemctl restart crio; done
+
 sudo -i
 crictl ps "Show Running Containners"
 ```
