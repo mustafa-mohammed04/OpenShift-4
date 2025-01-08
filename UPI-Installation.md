@@ -454,3 +454,96 @@ echo | openssl s_client -connect api-int.ocp-installation-test.lab.local:6443 | 
 ## To Upgrade Cluster-Version of OCP-Cluster
 ## Note : etcdbackup schedule task
 https://access.redhat.com/labsinfo/ocpupgradegraph    "stable channel"
+
+## Upgrade Cluster as CLI
+``` bash
+oc adm upgrade --to=<version>
+```
+## Delete stuck ns as force "terminiating status"
+``` bash
+NS=`oc get ns |grep Terminating | awk 'NR==1 {print $1}'` && oc get namespace <namespace-name> -o json   | tr -d "\n" | sed "s/\"finalizers\": \[[^]]\+\]/\"finalizers\": []/"   | oc replace --raw /api/v1/namespaces/<namespace-name>/finalize -f -
+```
+## Create NFS
+``` bash
+oc create namespace openshift-nfs-storage
+oc process -f  https://raw.githubusercontent.com/openshift-examples/external-storage-nfs-client/main/openshift-template-nfs-client-provisioner.yaml  -p NFS_SERVER=172.16.226.90  -p NFS_PATH=/root/amro_dir/ocp_share  | oc apply -f -
+```
+
+## Image Registry on Nutanix Volume
+https://opendocs.nutanix.com/openshift/post-install/
+
+## Machine Config Operator ISSUE
+https://access.redhat.com/solutions/4970731
+
+``` bash
+oc debug node/$node_name -- touch /host/run/machine-config-daemon-force
+```
+## Change ssh-keygen that installed in OCP-Cluster
+https://access.redhat.com/solutions/3868301
+1- For Worker-Nodes
+2- For Master-Nodes
+
+## Create ldap-cer integeration
+``` bash
+vim ldap-ca.yml
+
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: ldap-ca
+  namespace: openshift-config
+data:
+  ca.crt: |-
+  <>
+    -----END CERTIFICATE-----
+
+oc apply -f ldap-ca.yml
+oc edit oauths.config.openshift.io
+
+apiVersion: config.openshift.io/v1
+kind: OAuth
+metadata:
+  annotations:
+    include.release.openshift.io/ibm-cloud-managed: "true"
+    include.release.openshift.io/self-managed-high-availability: "true"
+    include.release.openshift.io/single-node-developer: "true"
+    release.openshift.io/create-only: "true"
+  creationTimestamp: "2023-03-16T10:31:29Z"
+  generation: 5
+  name: cluster
+  ownerReferences:
+  - apiVersion: config.openshift.io/v1
+    kind: ClusterVersion
+    name: version
+    uid: ca844b4a-8be3-4324-936d-c061cca5d762
+  resourceVersion: "151859623"
+  uid: <uid-ocp-cluster>
+spec:
+  identityProviders:
+  - htpasswd:
+      fileData:
+        name: <htpasswd-secret-name>
+    mappingMethod: claim
+    name: htpasswd
+    type: HTPasswd
+  - ldap:
+      attributes:
+        email: []
+        id:
+        - dn
+        name:
+        - cn
+        preferredUsername:
+        - name
+      bindDN: <>
+      bindPassword:
+        name: <ldap-bind-password-secret>
+      ca:
+        name: ldap-ca
+      insecure: false
+      url: ldaps://HQDC01.hqdomain.com:636/dc=hqdomain,dc=com?userPrincipalName?sub?(&(objectclass=*)(|(memberOf:1.2.840.113556.1.4.1941:=CN=<>)))
+    mappingMethod: claim
+    name: LDAP
+    type: LDAP
+
+
