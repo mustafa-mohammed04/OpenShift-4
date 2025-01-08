@@ -247,3 +247,114 @@ journalctl -b -f -u release-image.service -u bootkube.service
 ``` bash
 while true ; do oc get csr -o go-template='{{range .items}}{{if not .status}}{{.metadata.name}}{{"\n"}}{{end}}{{end}}' | xargs --no-run-if-empty oc adm certificate approve ; done
 ```
+
+## show api server
+``` bash
+oc whoami --show-server
+https://<api-hostname-FQN>:6443
+```
+## To Login Cluster as GUI "Console"
+``` bash
+oc whoami --show-console
+```
+## Login as kubeadmin user in cli or console
+## Default password of kubeadmin ""
+## If you lose access to the kubeadmin password, you may need to re-install the cluster 
+## Note after login make htpasswd user and ldap user and delete kubeadmin user and path of password
+## cat /home/user/ocp-install/auth/kubeadmin-password
+
+## Install  OperatorHub
+1- Login cluster as console
+2- Adminstrators > Operators > OperatorHub > <any-Operator>
+
+## Create htpasswd  User
+1- Locate the HTPasswd File  "Check the file location by running"
+``` bash
+oc get oauth cluster -o yaml | grep fileData
+```
+2- Extract the current htpasswd file from the Kubernetes secret
+``` bash
+oc extract secret/htpasswd-secret -n openshift-config --to=-
+```
+3- Save the content as htpasswd
+
+``` bash
+oc extract secret/htpasswd-secret -n openshift-config --to=. --confirm
+```
+4- Add the User to the HTPasswd File "Use the htpasswd tool to add a new user:"
+``` bash
+htpasswd -B -b htpasswd <username> <password>
+```
+5- Update the htpasswd file in the Kubernetes secret
+``` bash
+oc create secret generic htpasswd-secret --from-file=htpasswd=htpasswd -n openshift-config --dry-run=client -o yaml | oc apply -f -
+```
+6- Test the User
+``` bash
+oc login -u <username> -p <password> <api-url>
+```
+7- Ensure the new user appears in the cluster and after login in console 
+``` bash
+oc get users
+oc get identities.user.openshift.io
+```
+
+8- Assign roles to the user  "Optional" as CLI
+``` bash
+oc adm policy add-cluster-role-to-user cluster-admin <username>
+```
+8- Assign roles to the user  "Optional" as Console
+Adminstrator > User Management > Username > RoleBindings > Create Binding >  Role name "cluster-admin"
+
+## Create Ldap user as CLI
+## Note i have Group "DevOps-Main" and under this group list of users "devops.mustafa"
+## You have 2 Important files "ldap-sync.yaml & Ldap-Group-Whitelist"
+``` bash
+vim ldap-sync.yaml
+kind: LDAPSyncConfig
+apiVersion: v1
+url: ldap://<dns-server>:389
+insecure: <bool-value>
+bindDN: "<>"
+bindPassword: "<>"
+rfc2307:
+    groupsQuery:
+        baseDN: "<>"
+        scope: one
+        derefAliases: never
+        filter: (objectSid=*)
+        pageSize: 0
+    groupUIDAttribute: cn
+    groupNameAttributes: [ name ]
+    groupMembershipAttributes: [ member ]
+    usersQuery:
+        baseDN: "dc=hqdomain,dc=com"
+        scope: sub
+        derefAliases: never
+        pageSize: 0
+    userUIDAttribute: dn
+    userNameAttributes: [ cn ]
+    tolerateMemberNotFoundErrors: false
+    tolerateMemberOutOfScopeErrors: false
+
+```
+``` bash
+vim Ldap-Group-Whitelist
+<gruop-name>
+```
+## Run the LDAP Sync Command 
+``` bash
+oc adm groups sync --sync-config=ldap-sync.yaml --whitelist=ldap-group-whitelist
+oc adm groups sync --sync-config=ldap-sync.yaml --whitelist=ldap-group-whitelist --confirm
+oc get groups
+```
+
+## Assign Roles to Synced Users as CLI
+``` bash
+oc adm policy add-role-to-group cluster-admin <group-name>
+```
+## Assign Roles to Synced Users as Console 
+Adminstrator > User Management > Group-name > RoleBindings > Create Binding >  Role name "cluster-admin" 
+cluster-admin is Full Access
+if you want to read only Choose Role name "View"
+## 
