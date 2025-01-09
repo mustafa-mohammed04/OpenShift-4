@@ -618,3 +618,23 @@ platform Automation > Choose Projects > Projectname > Make Sync to Update
 7- Gitlab URL In OpenShitf-Porject
 ![Gitlab-url in ansible](https://github.com/user-attachments/assets/83f4714e-3c32-4671-b045-cbbf0fa99067)
 
+
+
+## Show VIP of  [ Master-Node, Worker-Node and DMZ-Node ]
+1- VIP Of Master-node
+``` bash
+oc whoami --show-server
+ping -c 1 <api......>          Result is ip "VIP"
+```
+2- VIP Of Worker-Node
+``` bash
+oc whoami --show-console
+ping -c 1 <console-openshift-......>
+```
+3- VIP of DMZ
+``` bash
+oc get ingresscontrollers.operator.openshift.io -A
+oc edit ingresscontrollers.operator.openshift.io dmz-ingress-controller -n openshift-ingress-operator           "search line domain and make ping to the value of domain"
+ping -c 1 <value-of-domain>
+```
+![VIP OF nodes](https://github.com/user-attachments/assets/ef2f106d-535b-4d0b-8c06-2f9cdbf30af3)
