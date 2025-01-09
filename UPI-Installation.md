@@ -565,8 +565,10 @@ oc whoami --show-console
 4- To know <ladp-password-<id>> Go to :
 ![Auth-1](https://github.com/user-attachments/assets/5d4aa3e7-59b1-4221-ac71-c36b29785463)  >> yaml >> find in yaml ldap
 
-5- Login to Ansible ![Sync Project in Ansible  ](https://github.com/user-attachments/assets/9e08dffe-6e18-4573-ada2-4cca946b1044)
+5- Login to Ansible 
 platform Automation > Choose Projects > Projectname > Make Sync to Update
+![Sync Project in Ansible](https://github.com/user-attachments/assets/298e4d23-d615-4eef-b1e7-576fd81ca2d5)
+
 
 6- Check Creedentials of templete and select plabook.yaml that existing in gitlap-repo
 ![templete cred](https://github.com/user-attachments/assets/df320feb-4505-4ad2-b44b-0d34d21578e1)
