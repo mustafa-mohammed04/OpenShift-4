@@ -306,6 +306,46 @@ oc adm policy add-cluster-role-to-user cluster-admin <username>
 8- Assign roles to the user  "Optional" as Console
 Adminstrator > User Management > Username > RoleBindings > Create Binding >  Role name "cluster-admin"
 
+## Create keystone user
+1- Ensure that OpenStack Keystone is running and configured properly
+2- Obtain the Keystone service URL
+3- Have Full access to your OpenShift cluster
+4- Edit oauth
+5- Create a Secret for the Client Secret
+``` bash
+oc edit oauth cluster
+
+spec:
+  identityProviders:
+  - name: keystone
+    mappingMethod: claim
+    type: OpenID
+    openID:
+      clientID: <keystone-client-id>
+      clientSecret:
+        name: <secret-name>
+      claims:
+        preferredUsername:
+        - preferred_username
+        name:
+        - name
+        email:
+        - email
+      issuer: https://<keystone-url>/v3
+
+oc create secret generic <secret-name> --from-literal=clientSecret=<keystone-client-secret> -n openshift-config
+```
+## In Keystone "OpenStack"
+``` bash
+openstack user create --domain default --password <password> <username>
+openstack role add --user <username> --project <project-name> <role-name>
+
+```
+## To Verify in Cluster-OCP
+``` bash
+oc login --server=<ocp-api-url> --username=<keystone-username> --password=<keystone-password>
+oc adm policy add-role-to-user <role> <username> -n <namespace>
+```
 ## Create Ldap user as CLI
 ## Note i have Group "DevOps-Main" and under this group list of users "devops.mustafa"
 ## You have 2 Important files "ldap-sync.yaml & Ldap-Group-Whitelist"
