@@ -546,4 +546,30 @@ spec:
     name: LDAP
     type: LDAP
 
+## Sync Manifestes-Gitlab-ldap with Ansible platform
+## you have yaml files in Gitlab that defined yaml of OCP and i want to run this yaml file from Ansible-platform-Automation
+1- Login in Gitlab and choose Repo that has yaml file
+
+2- Login to Cluster as Cli
+``` bash
+oc login -u <username> -p <passsword>
+oc whoami --show-server
+https://<>:6443
+oc whoami --show-console
+![login cluster as cli](https://github.com/user-attachments/assets/8075415f-012c-4a85-85f0-d1b7c3bc9483)
+
+```
+3- Login to Cluster as Console > Secrets > ldap-bind-password-<id>
+![console-1](https://github.com/user-attachments/assets/92d7dcde-7971-43a4-9a13-217eb3d833cd)
+
+4- To know <ladp-password-<id>> Go to :
+![Auth-1](https://github.com/user-attachments/assets/5d4aa3e7-59b1-4221-ac71-c36b29785463)  >> yaml >> find in yaml ldap
+
+5- Login to Ansible ![Sync Project in Ansible  ](https://github.com/user-attachments/assets/9e08dffe-6e18-4573-ada2-4cca946b1044)
+platform Automation > Choose Projects > Projectname > Make Sync to Update
+
+6- Check Creedentials of templete and select plabook.yaml that existing in gitlap-repo
+![templete cred](https://github.com/user-attachments/assets/df320feb-4505-4ad2-b44b-0d34d21578e1)
+7- Gitlab URL In OpenShitf-Porject
+![Gitlab-url in ansible](https://github.com/user-attachments/assets/83f4714e-3c32-4671-b045-cbbf0fa99067)
 
