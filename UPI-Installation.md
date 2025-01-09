@@ -620,13 +620,13 @@ platform Automation > Choose Projects > Projectname > Make Sync to Update
 
 
 
-## Show VIP of  [ Master-Node, Worker-Node and DMZ-Node ]
+## Show VIP of  [ Master-Node, Infra-Node and DMZ-Node ]
 1- VIP Of Master-node
 ``` bash
 oc whoami --show-server
 ping -c 1 <api......>          Result is ip "VIP"
 ```
-2- VIP Of Worker-Node
+2- VIP Of Infra-Node
 ``` bash
 oc whoami --show-console
 ping -c 1 <console-openshift-......>
