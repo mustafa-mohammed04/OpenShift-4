@@ -556,9 +556,12 @@ oc login -u <username> -p <passsword>
 oc whoami --show-server
 https://<>:6443
 oc whoami --show-console
-![login cluster as cli](https://github.com/user-attachments/assets/8075415f-012c-4a85-85f0-d1b7c3bc9483)
 
 ```
+![login cluster as cli](https://github.com/user-attachments/assets/9a7150b6-86c9-403b-82c8-00b42222083f)
+
+
+
 3- Login to Cluster as Console > Secrets > ldap-bind-password-<id>
 ![console-1](https://github.com/user-attachments/assets/92d7dcde-7971-43a4-9a13-217eb3d833cd)
 
